@@ -1,3 +1,6 @@
+import sys
+
+
 def load_dictionary(dict_file):
     try:
         with open(dict_file, 'r', encoding='utf-8') as f:
