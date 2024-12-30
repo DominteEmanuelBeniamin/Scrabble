@@ -21,7 +21,9 @@ class ScrabbleGame(QMainWindow):
 
         main_layout = QHBoxLayout(central_widget)
 
-        self.board = ScrabbleBoard()
+        self.rack = TileRack()
+        
+        self.board = ScrabbleBoard(tile_rack=self.rack)
         main_layout.addWidget(self.board)
 
         side_panel = QWidget()
@@ -32,9 +34,6 @@ class ScrabbleGame(QMainWindow):
         self.score_label = QLabel("Score: 0")
         new_game_btn = QPushButton("New Game")
         new_game_btn.clicked.connect(self.start_new_game)
-        
-        self.rack = TileRack()
-        self.rack.tile_selected.connect(self.handle_tile_selection)
         
         self.tiles_remaining_label = QLabel("Tiles remaining: 100")
         

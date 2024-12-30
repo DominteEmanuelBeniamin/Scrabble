@@ -35,7 +35,7 @@ class TileSystem:
         'V': {'count': 2, 'value': 8},
         'X': {'count': 1, 'value': 10},
         'Z': {'count': 1, 'value': 10},
-        '*': {'count': 2, 'value': 0}  
+        '*': {'count': 2, 'value': 0}
     }
 
     def __init__(self):

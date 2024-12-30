@@ -1,12 +1,11 @@
 from PyQt5.QtWidgets import QWidget, QGridLayout
+from PyQt5.QtCore import Qt
 from cell import ScrabbleCell
 
 class ScrabbleBoard(QWidget):
-    def __init__(self):
+    def __init__(self, tile_rack=None):
         super().__init__()
-        self.initUI()
-
-    def initUI(self):
+        self.tile_rack = tile_rack
         self.special_squares = {
             'TW': [(0,0), (0,7), (0,14), (7,0), (7,14), (14,0), (14,7), (14,14)],
             'DW': [(1,1), (1,13), (2,2), (2,12), (3,3), (3,11), (4,4), (4,10),
@@ -18,7 +17,9 @@ class ScrabbleBoard(QWidget):
                    (8,2), (8,6), (8,8), (8,12), (11,0), (11,7), (11,14),
                    (12,6), (12,8), (14,3), (14,11)]
         }
+        self.initUI()
 
+    def initUI(self):
         layout = QGridLayout()
         layout.setSpacing(1)
         
@@ -32,6 +33,8 @@ class ScrabbleBoard(QWidget):
                         break
                 
                 cell = ScrabbleCell(bonus_type)
+                if self.tile_rack:
+                    cell.rack_reference = self.tile_rack
                 layout.addWidget(cell, i, j)
                 self.cells[(i,j)] = cell
 

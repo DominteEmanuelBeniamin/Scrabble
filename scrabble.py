@@ -5,7 +5,7 @@ from utils import load_dictionary
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python main.py <dict_file>")
+        print("Usage: python scrabble.py <dict_file>")
         sys.exit(1)
 
     dict_file = sys.argv[1]
