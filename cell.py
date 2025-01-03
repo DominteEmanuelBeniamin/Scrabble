@@ -1,14 +1,14 @@
 from PyQt5.QtWidgets import QFrame, QLabel, QVBoxLayout
-from PyQt5.QtCore import Qt, QMimeData
-from PyQt5.QtGui import QFont, QColor, QPalette, QDrag
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont, QColor, QPalette
 
 class ScrabbleCell(QFrame):
     def __init__(self, bonus_type="", parent=None):
         super().__init__(parent)
         self.bonus_type = bonus_type
         self.letter = ""
-        self.setAcceptDrops(True)
         self.is_rack_tile = False
+        self.is_selected = False
         self.initUI()
 
     def initUI(self):
@@ -35,52 +35,45 @@ class ScrabbleCell(QFrame):
 
     def setColor(self):
         palette = self.palette()
-        if self.bonus_type == "TW":
-            color = QColor("#ff6b6b")
+        if self.is_selected:
+            color = QColor("#87CEFA")  # Light blue for selected
+        elif self.bonus_type == "TW":
+            color = QColor("#ff6b6b")  # Red for Triple Word
         elif self.bonus_type == "DW":
-            color = QColor("#ffb6b9")
+            color = QColor("#ffb6b9")  # Pink for Double Word
         elif self.bonus_type == "TL":
-            color = QColor("#4ecdc4")
+            color = QColor("#4ecdc4")  # Teal for Triple Letter
         elif self.bonus_type == "DL":
-            color = QColor("#96ceb4")
+            color = QColor("#96ceb4")  # Light green for Double Letter
         else:
-            color = QColor("white")
+            color = QColor("white")  # Default color
         
-        palette.setColor(QPalette.Background, color)
+        palette.setColor(QPalette.Window, color)
         self.setAutoFillBackground(True)
         self.setPalette(palette)
 
     def setLetter(self, letter):
+        """Set the letter displayed in this cell"""
         self.letter = letter
         self.letter_label.setText(letter)
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton and self.letter and self.is_rack_tile:
-            drag = QDrag(self)
-            mime_data = QMimeData()
-            
-            mime_data.setText(self.letter)
-            mime_data.setProperty('source_index', self.property('rack_index'))
-            
-            drag.setMimeData(mime_data)
-            drag.exec_(Qt.MoveAction)
+        """Handle mouse press events for selection"""
+        if event.button() == Qt.LeftButton:
+            if self.is_rack_tile:
+                # Handle rack tile selection
+                if hasattr(self.parent(), 'handle_tile_selection'):
+                    self.parent().handle_tile_selection(self)
+            elif not self.letter and not self.is_rack_tile:
+                # Handle board cell selection
+                if hasattr(self.parent(), 'handle_cell_selection'):
+                    self.parent().handle_cell_selection(self)
 
-    def dragEnterEvent(self, event):
-        if event.mimeData().hasText():
-            event.accept()
-        else:
-            event.ignore()
+    def setSelected(self, selected):
+        """Set whether this cell is selected"""
+        self.is_selected = selected
+        self.setColor()
 
-    def dropEvent(self, event):
-        if event.mimeData().hasText():
-            letter = event.mimeData().text()
-            source_index = event.mimeData().property('source_index')
-            
-            self.setLetter(letter)
-            
-            if not self.is_rack_tile and hasattr(self, 'rack_reference'):
-                self.rack_reference.remove_tile(source_index)
-            
-            event.accept()
-        else:
-            event.ignore()
+    def getText(self):
+        """Get the current letter in this cell"""
+        return self.letter
